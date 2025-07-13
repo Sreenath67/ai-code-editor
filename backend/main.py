@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 
 load_dotenv()
+print("🔐 Loaded API key:", OPENROUTER_API_KEY[:10])  # Only first 10 characters
+
 
 app = FastAPI()
 
