@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 
 load_dotenv()
-print("🔐 Loaded API key:", OPENROUTER_API_KEY[:10])  # Only first 10 characters
 
 
 app = FastAPI()
@@ -23,6 +22,10 @@ app.add_middleware(
 
 # OpenRouter key for DeepSeek model
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+if not OPENROUTER_API_KEY:
+    raise RuntimeError("❌ OPENROUTER_API_KEY is not set. Please add it in Railway service settings.")
+
+print("🔐 Loaded API key:", OPENROUTER_API_KEY[:10])
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat"
 
 # 1. RUN CODE USING PISTON API
