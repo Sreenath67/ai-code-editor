@@ -21,11 +21,7 @@ app.add_middleware(
 )
 
 # OpenRouter key for DeepSeek model
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-if not OPENROUTER_API_KEY:
-    raise RuntimeError("❌ OPENROUTER_API_KEY is not set. Please add it in Railway service settings.")
-
-print("🔐 Loaded API key:", OPENROUTER_API_KEY[:10])
+OPENROUTER_API_KEY = "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"
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat"
 
 # 1. RUN CODE USING PISTON API
