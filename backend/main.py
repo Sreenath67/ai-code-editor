@@ -79,7 +79,7 @@ Now respond to the user's query:
     }
 
     data = {
-        "model": "openchat/openchat-3.5-1210",
+        "model": "openchat/openchat-3.5-0106",
         "messages": [
             {"role": "system", "content": "You are a helpful coding assistant."},
             {"role": "user", "content": full_prompt}
