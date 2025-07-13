@@ -31,17 +31,21 @@ async def run_code(request: Request):
 
     try:
         res = requests.post("https://emkc.org/api/v2/piston/execute", json={
-    "language": "python3",
-    "version": "*",  # Always specify version
-    "source": code
-}, timeout=10)
-
+            "language": "python3",
+            "version": "*",
+            "files": [
+                {
+                    "name": "main.py",
+                    "content": code
+                }
+            ]
+        }, timeout=10)
 
         if res.ok:
             result = res.json()
             return {
-                "stdout": result.get("output", ""),
-                "stderr": "" if result.get("output") else "Error running code."
+                "stdout": result.get("run", {}).get("output", ""),
+                "stderr": "" if result.get("run", {}).get("output") else "Error running code."
             }
         else:
             return {"error": f"⚠️ Piston Error: {res.text}"}
