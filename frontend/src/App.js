@@ -10,7 +10,7 @@ function App() {
   const [promptInput, setPromptInput] = useState("");
   const editorRef = useRef(null);
 
-  const BACKEND_URL = "https://your-railway-backend-url.up.railway.app"; // Replace this with your deployed backend URL
+  const BACKEND_URL = "https://ai-code-editor.up.railway.app";
 
   const handleRun = async () => {
     try {
