@@ -20,9 +20,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# OpenRouter key for DeepSeek model
-OPENROUTER_API_KEY = "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"
-OPENROUTER_URL = "https://openrouter.ai/api/v1/chat"
+# OpenRouter key for AI model
+OPENROUTER_API_KEY = "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"
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # 1. RUN CODE USING PISTON API
 @app.post("/run")
@@ -79,7 +79,7 @@ Now respond to the user's query:
     }
 
     data = {
-        "model": "deepseek-coder:6.7b-instruct-v3",
+        "model": "openchat/openchat-3.5-1210",
         "messages": [
             {"role": "system", "content": "You are a helpful coding assistant."},
             {"role": "user", "content": full_prompt}
