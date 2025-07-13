@@ -21,7 +21,7 @@ app.add_middleware(
 )
 
 # OpenRouter key for AI model
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY") 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 # 1. RUN CODE USING PISTON API
@@ -79,7 +79,7 @@ Now respond to the user's query:
     }
 
     data = {
-        "model": "openchat/openchat-3.5-0106",
+        "model": "mistralai/mistral-7b-instruct",
         "messages": [
             {"role": "system", "content": "You are a helpful coding assistant."},
             {"role": "user", "content": full_prompt}
