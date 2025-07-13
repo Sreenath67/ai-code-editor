@@ -1,9 +1,6 @@
 # main.py
 import os
-import subprocess
-import tempfile
 import requests
-import re
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -13,7 +10,7 @@ load_dotenv()
 
 app = FastAPI()
 
-# Allow cross-origin requests
+# CORS for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,47 +19,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Read OpenRouter API key from environment
+# OpenRouter key for DeepSeek model
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat"
 
-# 1. RUN CODE ENDPOINT (with Docker security)
+# 1. RUN CODE USING PISTON API
 @app.post("/run")
 async def run_code(request: Request):
     data = await request.json()
     code = data.get("code", "")
 
-    # Write code to a temporary file
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".py", mode="w") as tmp:
-        tmp.write(code)
-        tmp.flush()
+    try:
+        res = requests.post("https://emkc.org/api/v2/piston/execute", json={
+            "language": "python3",
+            "source": code
+        }, timeout=10)
 
-        # Run the code in a Docker container (python:3.10-slim)
-        container_command = [
-            "docker", "run", "--rm",
-            "--cpus=0.5", "--memory=128m",
-            "-v", f"{tmp.name}:/app/code.py",
-            "python:3.10-slim",
-            "python", "/app/code.py"
-        ]
-
-        try:
-            result = subprocess.run(
-                container_command,
-                capture_output=True,
-                text=True,
-                timeout=5
-            )
+        if res.ok:
+            result = res.json()
             return {
-                "stdout": result.stdout,
-                "stderr": result.stderr
+                "stdout": result.get("output", ""),
+                "stderr": "" if result.get("output") else "Error running code."
             }
-        except subprocess.TimeoutExpired:
-            return {"error": "⏰ Execution timed out."}
-        except Exception as e:
-            return {"error": f"❌ Docker execution failed: {str(e)}"}
+        else:
+            return {"error": f"⚠️ Piston Error: {res.text}"}
+    except Exception as e:
+        return {"error": f"⚠️ Request failed: {str(e)}"}
 
-# 2. ASK-AI ENDPOINT USING OPENROUTER + DEEPSEEK
+
+# 2. AI CHAT USING OPENROUTER
 class PromptRequest(BaseModel):
     prompt: str
     user_code: str = ""
@@ -83,7 +68,7 @@ Now respond to the user's query:
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:3000"  # Update this on deployment
+        "HTTP-Referer": "https://ai-code-editor.vercel.app"
     }
 
     data = {
@@ -105,3 +90,4 @@ Now respond to the user's query:
     except Exception as e:
         return {"response": f"⚠️ Exception: {str(e)}"}
 
+    

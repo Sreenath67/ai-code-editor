@@ -10,16 +10,15 @@ function App() {
   const [promptInput, setPromptInput] = useState("");
   const editorRef = useRef(null);
 
-  const BACKEND_URL = "https://ai-code-editor.up.railway.app";
+  const BACKEND_URL = "https://ai-code-editor.up.railway.app"; // Railway backend URL
 
   const handleRun = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code })
       });
-
       const data = await response.json();
       const result = data.stdout || data.stderr || data.error;
       setOutput(result);
@@ -34,22 +33,22 @@ function App() {
     const userCode = editorRef.current?.getValue() || "";
     const prompt = promptInput;
 
-    setChatLog((prev) => [...prev, { role: "user", content: prompt }]);
+    setChatLog(prev => [...prev, { role: "user", content: prompt }]);
     setPromptInput("");
 
     try {
       const res = await fetch(`${BACKEND_URL}/ask-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, user_code: userCode }),
+        body: JSON.stringify({ prompt, user_code: userCode })
       });
 
       const data = await res.json();
       const aiReply = data.response || "⚠️ No response from AI.";
-      setChatLog((prev) => [...prev, { role: "assistant", content: aiReply }]);
+      setChatLog(prev => [...prev, { role: "assistant", content: aiReply }]);
     } catch (err) {
       const failMsg = "⚠️ AI request failed: " + err.message;
-      setChatLog((prev) => [...prev, { role: "assistant", content: failMsg }]);
+      setChatLog(prev => [...prev, { role: "assistant", content: failMsg }]);
     }
   };
 
@@ -83,17 +82,13 @@ function App() {
                 <p><strong>{entry.role === "user" ? "You" : "AI"}:</strong></p>
                 <pre>{entry.content}</pre>
                 {entry.role === "assistant" && (
-                  <button
-                    className="copy-button"
-                    onClick={() => copyToEditor(entry.content)}
-                  >
+                  <button className="copy-button" onClick={() => copyToEditor(entry.content)}>
                     Copy to Editor
                   </button>
                 )}
               </div>
             ))}
           </div>
-
           <div className="chat-input">
             <input
               type="text"
