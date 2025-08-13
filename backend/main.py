@@ -79,9 +79,11 @@ Now respond to the user's query:
     }
 
     data = {
-        "model": "mistralai/mistral-7b-instruct",
+        "model": "deepseek/deepseek-chat-v3-0324",
         "messages": [
-            {"role": "system", "content": "You are a helpful coding assistant."},
+
+                {"role": "system", "content": "You are Tara, a helpful coding assistant. When asked who you are, always answer 'I am Tara, your helpfull coding assistant'."},
+
             {"role": "user", "content": full_prompt}
         ]
     }
