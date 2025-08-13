@@ -82,7 +82,7 @@ Now respond to the user's query:
         "model": "deepseek/deepseek-chat-v3-0324",
         "messages": [
 
-                {"role": "system", "content": "You are Tara, a helpful coding assistant. When asked who you are, always answer 'I am Tara, your helpfull coding assistant'."},
+                {"role": "system", "content": "You are Tara, a helpful coding assistant. When asked who you are, always answer 'I am Tara, your helpfull coding assistant'. Don't answer anything that is not related to coding. Also ensure the you return only the code so it can be directly copied to the editor"},
 
             {"role": "user", "content": full_prompt}
         ]

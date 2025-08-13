@@ -8,10 +8,40 @@ function App() {
   const [output, setOutput] = useState("");
   const [chatLog, setChatLog] = useState([]);
   const [promptInput, setPromptInput] = useState("");
+  const [isListening, setIsListening] = useState(false);
   const editorRef = useRef(null);
 
   const BACKEND_URL = "https://ai-code-editor-2.onrender.com"; // Railway backend URL
    // Railway backend URL
+  // Voice recognition setup
+  const recognitionRef = useRef(null);
+
+  const handleMicClick = () => {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      alert('Speech recognition not supported in this browser.');
+      return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!recognitionRef.current) {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setPromptInput(prev => prev + (prev ? ' ' : '') + transcript);
+        setIsListening(false);
+      };
+      recognitionRef.current.onerror = () => {
+        setIsListening(false);
+      };
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+    setIsListening(true);
+    recognitionRef.current.start();
+  };
 
   const handleRun = async () => {
     try {
@@ -98,7 +128,15 @@ function App() {
               onChange={(e) => setPromptInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAskAI()}
             />
-            <button onClick={handleAskAI}>Send</button>
+            <button
+              className="mic-button"
+              onClick={handleMicClick}
+              style={{ marginLeft: '8px', background: isListening ? '#e0e0e0' : undefined }}
+              title="Speak"
+            >
+              {isListening ? '🎤...' : '🎤'}
+            </button>
+            <button onClick={handleAskAI} style={{ marginLeft: '8px' }}>Send</button>
           </div>
         </div>
       </div>
